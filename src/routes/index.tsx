@@ -63,6 +63,7 @@ function NavRow({ item, active, onSelect }: { item: NavItem; active?: boolean; o
   return (
     <Button
       variant="nav"
+      size="default"
       onClick={onSelect}
       className={active ? "bg-accent text-foreground hover:bg-accent" : undefined}
       aria-current={active ? "page" : undefined}
@@ -93,7 +94,7 @@ function Sidebar({ active, setActive, close }: { active: string; setActive: (val
       </div>
 
       <nav aria-label="Workspace navigation" className="flex min-h-0 flex-1 flex-col">
-        <Button variant="nav" onClick={() => select("Search")} className="mb-1">
+        <Button variant="nav" size="default" onClick={() => select("Search")} className="mb-1">
           <Search className="mr-3 size-4" strokeWidth={1.5} />
           Search
         </Button>
@@ -130,14 +131,14 @@ function Index() {
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden="true" />
             <div className="relative h-full shadow-2xl">
               <Sidebar active={active} setActive={setActive} close={() => setMobileOpen(false)} />
-              <Button variant="icon" className="absolute right-3 top-3 size-8" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X className="size-4" /></Button>
+              <Button variant="icon" size="icon" className="absolute right-3 top-3 size-8" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X className="size-4" /></Button>
             </div>
           </div>
         )}
 
         <main className="min-w-0 flex-1">
           <header className="grid h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 sm:h-[64px] sm:px-6">
-            <Button variant="ghost" className="size-8 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
+            <Button variant="ghost" size="icon" className="size-8 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
             <div className="hidden items-center gap-5 md:flex">
               <PanelLeftClose className="size-4 text-muted-foreground" strokeWidth={1.5} />
               <div className="flex min-w-0 items-center gap-2 text-sm">
@@ -153,7 +154,7 @@ function Index() {
                 <Command className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground opacity-0" />
                 <input ref={searchRef} aria-label="Search dashboard" className="h-9 w-[180px] rounded-lg border-0 bg-input px-3 text-xs text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:ring-1 lg:w-[272px]" />
               </label>
-              <Button variant="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
+              <Button variant="icon" size="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
             </div>
           </header>
 
