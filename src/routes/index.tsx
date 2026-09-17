@@ -122,8 +122,8 @@ function Index() {
   const searchRef = useRef<HTMLInputElement>(null);
 
   return (
-    <div className="min-h-screen bg-card p-0 sm:bg-background sm:p-2.5 lg:p-3">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1280px] overflow-hidden border-border bg-background sm:min-h-[calc(100vh-1.25rem)] sm:rounded-2xl sm:border lg:min-h-[calc(100vh-1.5rem)]">
+    <div className="min-h-screen bg-canvas p-2.5">
+      <div className="flex min-h-[calc(100vh-1.25rem)] w-full overflow-hidden rounded-2xl border border-border bg-background">
         <div className="hidden md:block"><Sidebar active={active} setActive={setActive} /></div>
 
         {mobileOpen && (
