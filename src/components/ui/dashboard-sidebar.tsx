@@ -7,14 +7,17 @@ import {
   ChevronRight,
   CircleUserRound,
   CreditCard,
+  FolderKanban,
+  Globe,
   Hash,
   Inbox,
-  KeyRound,
+  LayoutDashboard,
   LogOut,
   Search,
   Settings,
+  Terminal,
   UsersRound,
-  Webhook,
+  Blocks,
 } from "lucide-react";
 import { Button } from "./button";
 
@@ -36,7 +39,7 @@ export const navGroups: NavGroupData[] = [
   {
     items: [
       { id: "search", title: "Search", icon: Search, shortcut: "⌘K" },
-      { id: "home", title: "Home", icon: Boxes },
+      { id: "home", title: "Home", icon: LayoutDashboard },
       { id: "inbox", title: "Inbox", icon: Inbox, badge: 12 },
       { id: "analytics", title: "Analytics", icon: Activity },
     ],
@@ -47,7 +50,7 @@ export const navGroups: NavGroupData[] = [
       {
         id: "projects",
         title: "Projects",
-        icon: Boxes,
+        icon: FolderKanban,
         children: [
           { id: "p-active", title: "Active", icon: Hash },
           { id: "p-archived", title: "Archived", icon: Hash },
@@ -67,7 +70,7 @@ export const navGroups: NavGroupData[] = [
       {
         id: "customers",
         title: "Customers",
-        icon: CircleUserRound,
+        icon: Globe,
         children: [
           { id: "c-enterprise", title: "Enterprise", icon: Hash },
           { id: "c-smb", title: "SMB", icon: Hash },
@@ -79,8 +82,8 @@ export const navGroups: NavGroupData[] = [
   {
     heading: "Developers",
     items: [
-      { id: "api", title: "API Keys", icon: KeyRound },
-      { id: "webhooks", title: "Webhooks", icon: Webhook },
+      { id: "api", title: "API Keys", icon: Terminal },
+      { id: "webhooks", title: "Webhooks", icon: Blocks },
     ],
   },
 ];
@@ -128,7 +131,7 @@ function WorkspaceSwitcher({
 
       {isOpen && (
         <>
-          <button className="fixed inset-0 z-40 cursor-default" aria-label="Close workspace menu" onClick={() => setIsOpen(false)} />
+          <div className="fixed inset-0 z-40 cursor-default" aria-hidden="true" onClick={() => setIsOpen(false)} />
           <div className="absolute left-0 top-12 z-50 w-full rounded-lg border border-border bg-card p-1 shadow-2xl" role="menu">
             {workspaces.map((workspace) => (
               <Button

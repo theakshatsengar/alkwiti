@@ -1,27 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  Activity,
-  Boxes,
-  CalendarDays,
-  ChevronDown,
-  ChevronRight,
   CircleUserRound,
   Command,
-  CreditCard,
-  Grid2X2,
-  Inbox,
-  KeyRound,
-  LogOut,
   Menu,
   PanelLeftClose,
+  PanelLeftOpen,
   Search,
-  Settings,
-  UsersRound,
-  Webhook,
   X,
 } from "lucide-react";
-import { useRef, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "../components/ui/button";
+import {
+  SidebarNav,
+  allSidebarItems,
+  flattenNavItems,
+  type NavItemData,
+} from "../components/ui/dashboard-sidebar";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,100 +31,49 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type NavItem = {
-  label: string;
-  icon: ComponentType<{ className?: string; strokeWidth?: number }>;
-  badge?: string;
-  chevron?: boolean;
-};
+function Index() {
+  const [activeId, setActiveId] = useState("webhooks");
+  const [activeWorkspace, setActiveWorkspace] = useState("Acme Corp");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopOpen, setDesktopOpen] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
+  const activeItem = flattenNavItems(allSidebarItems).find((item) => item.id === activeId);
+  const activeTitle = activeItem?.title ?? "Dashboard";
 
-const mainItems: NavItem[] = [
-  { label: "Home", icon: Grid2X2 },
-  { label: "Inbox", icon: Inbox, badge: "12" },
-  { label: "Analytics", icon: Activity },
-];
-
-const workspaceItems: NavItem[] = [
-  { label: "Projects", icon: Boxes, chevron: true },
-  { label: "Calendar", icon: CalendarDays },
-  { label: "Team", icon: UsersRound, chevron: true },
-  { label: "Customers", icon: CircleUserRound, chevron: true },
-  { label: "Finance", icon: CreditCard },
-];
-
-function NavRow({ item, active, onSelect }: { item: NavItem; active?: boolean; onSelect: () => void }) {
-  const Icon = item.icon;
-  return (
-    <Button
-      variant="nav"
-      size="default"
-      onClick={onSelect}
-      className={active ? "bg-accent text-foreground hover:bg-accent" : undefined}
-      aria-current={active ? "page" : undefined}
-    >
-      <Icon className="mr-3 size-4 shrink-0" strokeWidth={1.5} />
-      <span className="min-w-0 flex-1 truncate">{item.label}</span>
-      {item.badge && <span className="rounded-full bg-secondary px-1.5 py-0.5 text-[10px] text-secondary-foreground">{item.badge}</span>}
-      {item.chevron && <ChevronRight className="size-3.5 shrink-0" strokeWidth={1.5} />}
-    </Button>
-  );
-}
-
-function Sidebar({ active, setActive, close }: { active: string; setActive: (value: string) => void; close?: () => void }) {
-  const select = (label: string) => {
-    setActive(label);
-    close?.();
+  const handleSelect = (item: NavItemData) => {
+    if (item.id === "search") {
+      setSearchOpen(true);
+      return;
+    }
+    setActiveId(item.id);
+    setMobileOpen(false);
   };
 
-  return (
-    <aside className="flex h-full w-[276px] shrink-0 flex-col border-r border-border bg-card px-3.5 py-5 sm:px-4">
-      <div className="mb-7 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 px-2">
-        <div className="grid size-9 shrink-0 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground">A</div>
-        <div className="min-w-0 leading-tight">
-          <p className="truncate text-sm font-semibold text-foreground">Acme Corp</p>
-          <p className="mt-0.5 truncate text-xs text-muted-foreground">Pro Plan</p>
-        </div>
-        <ChevronDown className="size-3.5 text-muted-foreground" strokeWidth={1.5} />
-      </div>
-
-      <nav aria-label="Workspace navigation" className="flex min-h-0 flex-1 flex-col">
-        <Button variant="nav" size="default" onClick={() => select("Search")} className="mb-1">
-          <Search className="mr-3 size-4" strokeWidth={1.5} />
-          Search
-        </Button>
-        {mainItems.map((item) => <NavRow key={item.label} item={item} active={active === item.label} onSelect={() => select(item.label)} />)}
-
-        <p className="mb-2 mt-5 px-3 text-[11px] font-semibold uppercase text-muted-foreground/70">Workspace</p>
-        {workspaceItems.map((item) => <NavRow key={item.label} item={item} active={active === item.label} onSelect={() => select(item.label)} />)}
-
-        <p className="mb-2 mt-5 px-3 text-[11px] font-semibold uppercase text-muted-foreground/70">Developers</p>
-        <NavRow item={{ label: "API Keys", icon: KeyRound }} active={active === "API Keys"} onSelect={() => select("API Keys")} />
-        <NavRow item={{ label: "Webhooks", icon: Webhook }} active={active === "Webhooks"} onSelect={() => select("Webhooks")} />
-
-        <div className="mt-auto border-t border-border pt-4">
-          <NavRow item={{ label: "Settings", icon: Settings }} active={active === "Settings"} onSelect={() => select("Settings")} />
-          <NavRow item={{ label: "Log out", icon: LogOut }} onSelect={() => select("Log out")} />
-        </div>
-      </nav>
-    </aside>
-  );
-}
-
-function Index() {
-  const [active, setActive] = useState("Webhooks");
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+      if (event.key === "Escape") setSearchOpen(false);
+    };
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, []);
 
   return (
     <div className="min-h-screen bg-canvas p-2.5">
-      <div className="flex min-h-[calc(100vh-1.25rem)] w-full overflow-hidden rounded-2xl border border-border bg-background">
-        <div className="hidden md:block"><Sidebar active={active} setActive={setActive} /></div>
+      <div className="relative flex min-h-[calc(100vh-1.25rem)] w-full overflow-hidden rounded-2xl border border-border bg-background">
+        <div className={`hidden shrink-0 overflow-hidden transition-[width,opacity] duration-300 md:block ${desktopOpen ? "w-[276px] opacity-100" : "w-0 opacity-0"}`}>
+          <SidebarNav activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
+        </div>
 
         {mobileOpen && (
           <div className="fixed inset-0 z-50 flex md:hidden">
             <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden="true" />
             <div className="relative h-full shadow-2xl">
-              <Sidebar active={active} setActive={setActive} close={() => setMobileOpen(false)} />
+              <SidebarNav activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
               <Button variant="icon" size="icon" className="absolute right-3 top-3 size-8" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X className="size-4" /></Button>
             </div>
           </div>
@@ -140,19 +83,21 @@ function Index() {
           <header className="grid h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 sm:h-[64px] sm:px-6">
             <Button variant="ghost" size="icon" className="size-8 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
             <div className="hidden items-center gap-5 md:flex">
-              <PanelLeftClose className="size-4 text-muted-foreground" strokeWidth={1.5} />
+              <Button variant="ghost" size="icon" className="size-8 p-0" onClick={() => setDesktopOpen((open) => !open)} aria-label={desktopOpen ? "Collapse sidebar" : "Expand sidebar"}>
+                {desktopOpen ? <PanelLeftClose className="size-4 text-muted-foreground" strokeWidth={1.5} /> : <PanelLeftOpen className="size-4 text-muted-foreground" strokeWidth={1.5} />}
+              </Button>
               <div className="flex min-w-0 items-center gap-2 text-sm">
-                <span className="truncate text-muted-foreground">Acme Corp</span>
+                <span className="truncate text-muted-foreground">{activeWorkspace}</span>
                 <span className="text-muted-foreground">/</span>
-                <span className="font-semibold text-foreground">{active}</span>
+                <span className="font-semibold text-foreground">{activeTitle}</span>
               </div>
             </div>
-            <p className="min-w-0 truncate text-sm font-semibold md:hidden">{active}</p>
+            <p className="min-w-0 truncate text-sm font-semibold md:hidden">{activeTitle}</p>
             <div className="flex items-center gap-3 sm:gap-4">
               <label className="relative hidden sm:block">
                 <span className="sr-only">Search</span>
                 <Command className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground opacity-0" />
-                <input ref={searchRef} aria-label="Search dashboard" className="h-9 w-[180px] rounded-lg border-0 bg-input px-3 text-xs text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:ring-1 lg:w-[272px]" />
+                <input ref={searchRef} readOnly onClick={() => setSearchOpen(true)} aria-label="Search dashboard" className="h-9 w-[180px] cursor-pointer rounded-lg border-0 bg-input px-3 text-xs text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:ring-1 lg:w-[272px]" />
               </label>
               <Button variant="icon" size="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
             </div>
@@ -173,6 +118,24 @@ function Index() {
             </div>
           </section>
         </main>
+
+        {searchOpen && (
+          <div className="absolute inset-0 z-[60] flex items-start justify-center bg-background/70 px-4 pt-[15vh] backdrop-blur-sm">
+            <div className="absolute inset-0" onClick={() => setSearchOpen(false)} aria-hidden="true" />
+            <div className="relative w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl" role="dialog" aria-modal="true" aria-label="Search dashboard">
+              <div className="flex items-center border-b border-border px-4">
+                <Search className="mr-3 size-[18px] shrink-0 text-muted-foreground" strokeWidth={1.5} />
+                <input autoFocus className="flex-1 bg-transparent py-4 text-sm text-foreground outline-none placeholder:text-muted-foreground" placeholder="Search projects, docs, or actions..." />
+                <kbd className="hidden rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">ESC</kbd>
+                <Button variant="ghost" size="icon" className="ml-2 size-8" onClick={() => setSearchOpen(false)} aria-label="Close search"><X className="size-4" /></Button>
+              </div>
+              <div className="flex flex-col items-center justify-center py-8">
+                <Command className="mb-2 size-6 text-muted-foreground/40" strokeWidth={1.5} />
+                <p className="text-[13px] font-medium text-muted-foreground">Type a command or search...</p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
