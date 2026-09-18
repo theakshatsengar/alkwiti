@@ -63,8 +63,8 @@ function Index() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-canvas p-2.5">
-      <div className="relative flex min-h-[calc(100vh-1.25rem)] w-full overflow-hidden rounded-2xl border border-border bg-background">
+<div className="h-screen overflow-hidden bg-canvas p-2.5">
+      <div className="relative flex h-full w-full overflow-hidden rounded-2xl border border-border bg-background">
         <div className={`hidden shrink-0 overflow-hidden transition-[width,opacity] duration-300 md:block ${desktopOpen ? "w-[276px] opacity-100" : "w-0 opacity-0"}`}>
           <SidebarNav activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
         </div>
@@ -79,7 +79,7 @@ function Index() {
           </div>
         )}
 
-        <main className="min-w-0 flex-1">
+        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <header className="flex h-[60px] items-center gap-3 border-b border-border px-4 sm:h-[64px] sm:px-6">
             <Button variant="ghost" size="icon" className="size-8 shrink-0 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
             <div className="hidden min-w-0 flex-1 items-center gap-5 md:flex">
@@ -102,7 +102,7 @@ function Index() {
             </div>
           </header>
 
-          <section aria-label="Webhook dashboard" className="px-4 py-7 sm:px-8 sm:py-9 lg:px-9">
+          <section aria-label="Webhook dashboard" className="min-h-0 flex-1 overflow-y-auto px-4 py-7 sm:px-8 sm:py-9 lg:px-9">
             <div className="mb-8 h-9 w-[204px] max-w-[58%] animate-pulse rounded-lg bg-muted" />
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
               <div className="aspect-[1.7/0.8] rounded-xl border border-border bg-card sm:aspect-[1.7/0.8]" />

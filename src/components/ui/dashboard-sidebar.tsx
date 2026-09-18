@@ -228,10 +228,10 @@ export function SidebarNav({
             {group.items.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} />)}
           </div>
         ))}
-        <div className="mt-auto border-t border-border pt-4">
-          {bottomItems.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} />)}
-        </div>
       </nav>
+      <div className="mt-4 shrink-0 border-t border-border pt-4">
+        {bottomItems.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} />)}
+      </div>
     </aside>
   );
 }
