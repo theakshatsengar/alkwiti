@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "../components/ui/button";
-import { ThemeToggle } from "../components/theme-toggle";
 import {
   SidebarNav,
   allSidebarItems,
@@ -100,7 +99,6 @@ function Index() {
                 <input ref={searchRef} readOnly onClick={() => setSearchOpen(true)} aria-label="Search dashboard" className="h-9 w-[180px] cursor-pointer rounded-lg border-0 bg-input px-3 text-xs text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:ring-1 lg:w-[272px]" />
               </label>
               <Button variant="icon" size="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
-              <ThemeToggle />
             </div>
           </header>
 
