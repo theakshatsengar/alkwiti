@@ -64,7 +64,7 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-canvas p-2.5">
-      <div className="flex min-h-[calc(100vh-1.25rem)] w-full overflow-hidden rounded-2xl border border-border bg-background">
+      <div className="relative flex min-h-[calc(100vh-1.25rem)] w-full overflow-hidden rounded-2xl border border-border bg-background">
         <div className={`hidden shrink-0 overflow-hidden transition-[width,opacity] duration-300 md:block ${desktopOpen ? "w-[276px] opacity-100" : "w-0 opacity-0"}`}>
           <SidebarNav activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
         </div>
