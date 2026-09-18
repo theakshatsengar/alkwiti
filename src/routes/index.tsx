@@ -80,10 +80,10 @@ function Index() {
         )}
 
         <main className="min-w-0 flex-1">
-          <header className="grid h-[60px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-4 sm:h-[64px] sm:px-6">
-            <Button variant="ghost" size="icon" className="size-8 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
-            <div className="hidden items-center gap-5 md:flex">
-              <Button variant="ghost" size="icon" className="size-8 p-0" onClick={() => setDesktopOpen((open) => !open)} aria-label={desktopOpen ? "Collapse sidebar" : "Expand sidebar"}>
+          <header className="flex h-[60px] items-center gap-3 border-b border-border px-4 sm:h-[64px] sm:px-6">
+            <Button variant="ghost" size="icon" className="size-8 shrink-0 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
+            <div className="hidden min-w-0 flex-1 items-center gap-5 md:flex">
+              <Button variant="ghost" size="icon" className="size-8 shrink-0 p-0" onClick={() => setDesktopOpen((open) => !open)} aria-label={desktopOpen ? "Collapse sidebar" : "Expand sidebar"}>
                 {desktopOpen ? <PanelLeftClose className="size-4 text-muted-foreground" strokeWidth={1.5} /> : <PanelLeftOpen className="size-4 text-muted-foreground" strokeWidth={1.5} />}
               </Button>
               <div className="flex min-w-0 items-center gap-2 text-sm">
@@ -92,11 +92,10 @@ function Index() {
                 <span className="font-semibold text-foreground">{activeTitle}</span>
               </div>
             </div>
-            <p className="min-w-0 truncate text-sm font-semibold md:hidden">{activeTitle}</p>
-            <div className="flex items-center gap-3 sm:gap-4">
+            <p className="min-w-0 flex-1 truncate text-sm font-semibold md:hidden">{activeTitle}</p>
+            <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-4">
               <label className="relative hidden sm:block">
                 <span className="sr-only">Search</span>
-                <Command className="pointer-events-none absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground opacity-0" />
                 <input ref={searchRef} readOnly onClick={() => setSearchOpen(true)} aria-label="Search dashboard" className="h-9 w-[180px] cursor-pointer rounded-lg border-0 bg-input px-3 text-xs text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:ring-1 lg:w-[272px]" />
               </label>
               <Button variant="icon" size="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
