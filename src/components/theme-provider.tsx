@@ -28,7 +28,7 @@ const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undef
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "dark",
   storageKey = STORAGE_KEY,
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
@@ -36,17 +36,21 @@ export function ThemeProvider({
     const stored = window.localStorage.getItem(storageKey) as Theme | null;
     return stored ?? defaultTheme;
   });
-  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("light");
+  const [resolvedTheme, setResolvedTheme] = useState<"dark" | "light">("dark");
 
   const applyTheme = useCallback(
     (value: Theme) => {
       const root = window.document.documentElement;
-      root.classList.remove("light", "dark");
+      // `:root` holds the dark theme (the app default). Light mode is applied
+      // by adding a `.light` class that overrides the CSS variables.
+      root.classList.remove("light");
 
       const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const resolved = value === "system" ? (systemDark ? "dark" : "light") : value;
       setResolvedTheme(resolved);
-      root.classList.add(resolved);
+      if (resolved === "light") {
+        root.classList.add("light");
+      }
     },
     [],
   );
