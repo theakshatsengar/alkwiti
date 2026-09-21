@@ -102,12 +102,30 @@ export function flattenNavItems(items: NavItemData[]): NavItemData[] {
 function WorkspaceSwitcher({
   selected,
   onSelect,
+  collapsed = false,
 }: {
   selected: string;
   onSelect: (workspace: string) => void;
+  collapsed?: boolean;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const workspaces = ["Acme Corp", "Personal Workspace", "Client Sandbox"];
+
+  if (collapsed) {
+    return (
+      <div className="mb-7 flex justify-center">
+        <button
+          type="button"
+          title={selected}
+          aria-label={selected}
+          onClick={() => onSelect(selected)}
+          className="grid size-10 shrink-0 place-items-center rounded-md bg-primary text-sm font-semibold text-primary-foreground transition-colors hover:opacity-90"
+        >
+          {selected.charAt(0)}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="relative mb-7">
@@ -164,16 +182,38 @@ function NavItem({
   activeId,
   onSelect,
   level = 0,
+  collapsed = false,
 }: {
   item: NavItemData;
   activeId: string;
   onSelect: (item: NavItemData) => void;
   level?: number;
+  collapsed?: boolean;
 }) {
   const activeWithin = item.children?.some((child) => child.id === activeId) ?? false;
   const [isOpen, setIsOpen] = useState(activeWithin);
   const Icon = item.icon;
   const hasChildren = Boolean(item.children?.length);
+
+  if (collapsed) {
+    const active = activeId === item.id || activeWithin;
+    return (
+      <button
+        type="button"
+        title={item.title}
+        aria-label={item.title}
+        aria-current={activeId === item.id ? "page" : undefined}
+        onClick={() => onSelect(item)}
+        className={`mx-auto mb-1 flex size-10 items-center justify-center rounded-lg transition-colors ${
+          active
+            ? "bg-accent text-foreground"
+            : "text-muted-foreground hover:bg-accent hover:text-foreground"
+        }`}
+      >
+        <Icon className="size-4" strokeWidth={1.5} />
+      </button>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -210,27 +250,34 @@ export function SidebarNav({
   onSelect,
   activeWorkspace,
   onWorkspaceSelect,
+  collapsed = false,
   className = "",
 }: {
   activeId: string;
   onSelect: (item: NavItemData) => void;
   activeWorkspace: string;
   onWorkspaceSelect: (workspace: string) => void;
+  collapsed?: boolean;
   className?: string;
 }) {
   return (
-    <aside className={`flex h-full w-[276px] shrink-0 flex-col border-r border-border bg-card px-3.5 py-5 sm:px-4 ${className}`}>
-      <WorkspaceSwitcher selected={activeWorkspace} onSelect={onWorkspaceSelect} />
+    <aside
+      className={`flex h-full shrink-0 flex-col border-r border-border bg-card py-5 ${
+        collapsed ? "w-[68px] px-2" : "w-[276px] px-3.5 sm:px-4"
+      } ${className}`}
+    >
+      <WorkspaceSwitcher selected={activeWorkspace} onSelect={onWorkspaceSelect} collapsed={collapsed} />
       <nav aria-label="Workspace navigation" className="flex min-h-0 flex-1 flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {navGroups.map((group, index) => (
-          <div key={group.heading ?? "main"} className={index === 0 ? "" : "mt-5"}>
-            {group.heading && <p className="mb-2 px-3 text-[11px] font-semibold uppercase text-muted-foreground/70">{group.heading}</p>}
-            {group.items.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} />)}
+          <div key={group.heading ?? "main"} className={index === 0 ? "" : collapsed ? "mt-3" : "mt-5"}>
+            {group.heading && !collapsed && <p className="mb-2 px-3 text-[11px] font-semibold uppercase text-muted-foreground/70">{group.heading}</p>}
+            {group.heading && collapsed && index !== 0 && <div className="mx-auto mb-2 h-px w-6 bg-border" />}
+            {group.items.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} collapsed={collapsed} />)}
           </div>
         ))}
       </nav>
       <div className="mt-4 shrink-0 border-t border-border pt-4">
-        {bottomItems.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} />)}
+        {bottomItems.map((item) => <NavItem key={item.id} item={item} activeId={activeId} onSelect={onSelect} collapsed={collapsed} />)}
       </div>
     </aside>
   );

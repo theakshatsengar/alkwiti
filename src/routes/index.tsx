@@ -17,6 +17,7 @@ import {
   type NavItemData,
 } from "../components/ui/dashboard-sidebar";
 
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -37,7 +38,7 @@ function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [desktopOpen, setDesktopOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const searchRef = useRef<HTMLButtonElement>(null);
   const activeItem = flattenNavItems(allSidebarItems).find((item) => item.id === activeId);
   const activeTitle = activeItem?.title ?? "Dashboard";
 
@@ -65,8 +66,8 @@ function Index() {
   return (
 <div className="h-screen overflow-hidden bg-canvas p-2.5">
       <div className="relative flex h-full w-full overflow-hidden rounded-2xl border border-border bg-background">
-        <div className={`hidden shrink-0 overflow-hidden transition-[width,opacity] duration-300 md:block ${desktopOpen ? "w-[276px] opacity-100" : "w-0 opacity-0"}`}>
-          <SidebarNav activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
+        <div className={`hidden shrink-0 overflow-hidden transition-[width] duration-300 md:block ${desktopOpen ? "w-[276px]" : "w-[68px]"}`}>
+          <SidebarNav collapsed={!desktopOpen} activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
         </div>
 
         {mobileOpen && (
@@ -94,10 +95,17 @@ function Index() {
             </div>
             <p className="min-w-0 flex-1 truncate text-sm font-semibold md:hidden">{activeTitle}</p>
             <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-4">
-              <label className="relative hidden sm:block">
-                <span className="sr-only">Search</span>
-                <input ref={searchRef} readOnly onClick={() => setSearchOpen(true)} aria-label="Search dashboard" className="h-9 w-[180px] cursor-pointer rounded-lg border-0 bg-input px-3 text-xs text-foreground outline-none ring-ring placeholder:text-muted-foreground focus:ring-1 lg:w-[272px]" />
-              </label>
+              <button
+                type="button"
+                ref={searchRef}
+                onClick={() => setSearchOpen(true)}
+                aria-label="Search dashboard"
+                className="hidden h-9 w-[180px] items-center gap-2 rounded-lg bg-input px-3 text-xs text-muted-foreground outline-none ring-ring transition-colors hover:bg-accent focus-visible:ring-1 sm:flex lg:w-[272px]"
+              >
+                <Search className="size-4 shrink-0" strokeWidth={1.5} />
+                <span className="flex-1 truncate text-left">Search...</span>
+                <kbd className="hidden rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] lg:inline-flex">⌘K</kbd>
+              </button>
               <Button variant="icon" size="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
             </div>
           </header>
