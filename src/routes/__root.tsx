@@ -11,6 +11,11 @@ import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
+import { FinanceProvider } from "../lib/finance/store";
+import { ThemeProvider } from "../lib/theme";
+
+// Runs before first paint to apply the stored theme and avoid a light-mode flash.
+const THEME_INIT_SCRIPT = `(function(){try{var m=localStorage.getItem("alkwiti.theme.v1");var d=m==="dark"||((!m||m==="system")&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;if(d)r.classList.add("dark");r.style.colorScheme=d?"dark":"light";}catch(e){}})();`;
 
 function NotFoundComponent() {
   return (
@@ -77,14 +82,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Acme Corp" },
-      { name: "description", content: "Acme Corp workspace dashboard" },
-      { name: "author", content: "Acme Corp" },
-      { property: "og:title", content: "Acme Corp" },
-      { property: "og:description", content: "Acme Corp workspace dashboard" },
+      { title: "ALKWITI · Financial & Business Dashboard" },
+      { name: "description", content: "ALKWITI founder financial command center." },
+      { name: "author", content: "ALKWITI" },
+      { property: "og:title", content: "ALKWITI · Financial & Business Dashboard" },
+      { property: "og:description", content: "ALKWITI founder financial command center." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -93,7 +97,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap",
+      },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -107,6 +114,7 @@ function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
@@ -122,8 +130,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ThemeProvider>
+        <FinanceProvider>
+          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+          <Outlet />
+        </FinanceProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

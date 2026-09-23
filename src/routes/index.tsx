@@ -1,149 +1,254 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  CircleUserRound,
-  Command,
-  Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Search,
-  X,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import { Button } from "../components/ui/button";
-import {
-  SidebarNav,
-  allSidebarItems,
-  flattenNavItems,
-  type NavItemData,
-} from "../components/ui/dashboard-sidebar";
-
+import { useState } from "react";
+import { Wallet, Package, ShoppingCart, Receipt, PiggyBank, ArrowRight } from "lucide-react";
+import { DashboardShell } from "@/components/dashboard/shell";
+import { KpiCard, SectionCard, GoalBar, useMoney } from "@/components/dashboard/primitives";
+import { RevenueChart } from "@/components/dashboard/revenue-chart";
+import { GoalCard } from "@/components/dashboard/goal-card";
+import { usePeriodData } from "@/components/dashboard/use-period-data";
+import type { RangePreset } from "@/components/dashboard/date-range";
+import { useFinance } from "@/lib/finance/store";
+import { format, parseISO } from "date-fns";
 
 export const Route = createFileRoute("/")({
   head: () => ({
-    meta: [
-      { title: "Webhooks | Acme Corp" },
-      { name: "description", content: "Manage Acme Corp developer webhooks." },
-      { property: "og:title", content: "Webhooks | Acme Corp" },
-      { property: "og:description", content: "Manage Acme Corp developer webhooks." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
+    meta: [{ title: "Overview · ALKWITI" }],
   }),
-  component: Index,
+  component: Overview,
 });
 
-function Index() {
-  const [activeId, setActiveId] = useState("webhooks");
-  const [activeWorkspace, setActiveWorkspace] = useState("Acme Corp");
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [desktopOpen, setDesktopOpen] = useState(true);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const searchRef = useRef<HTMLButtonElement>(null);
-  const activeItem = flattenNavItems(allSidebarItems).find((item) => item.id === activeId);
-  const activeTitle = activeItem?.title ?? "Dashboard";
+function Overview() {
+  const [preset, setPreset] = useState<RangePreset>("all");
+  const data = usePeriodData(preset);
+  const { salaryPayments } = useFinance();
+  const money = useMoney();
 
-  const handleSelect = (item: NavItemData) => {
-    if (item.id === "search") {
-      setSearchOpen(true);
-      return;
-    }
-    setActiveId(item.id);
-    setMobileOpen(false);
-  };
-
-  useEffect(() => {
-    const handleShortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
-        event.preventDefault();
-        setSearchOpen(true);
-      }
-      if (event.key === "Escape") setSearchOpen(false);
-    };
-    window.addEventListener("keydown", handleShortcut);
-    return () => window.removeEventListener("keydown", handleShortcut);
-  }, []);
+  const recent = [
+    ...data.currentInvoices.map((i) => ({
+      id: i.id,
+      date: i.date,
+      kind: "Revenue" as const,
+      label: `${i.customer} · ${i.product}`,
+      amount: i.alkwitiRevenue,
+      positive: true,
+    })),
+    ...data.currentExpenses.map((e) => ({
+      id: e.id,
+      date: e.date,
+      kind: "Expense" as const,
+      label: e.description,
+      amount: e.inrEquivalent,
+      positive: false,
+    })),
+  ]
+    .sort((a, b) => (a.date < b.date ? 1 : -1))
+    .slice(0, 8);
 
   return (
-<div className="h-screen overflow-hidden bg-canvas p-2.5">
-      <div className="relative flex h-full w-full overflow-hidden rounded-2xl border border-border bg-background">
-        <div className={`hidden shrink-0 overflow-hidden transition-[width] duration-300 md:block ${desktopOpen ? "w-[276px]" : "w-[68px]"}`}>
-          <SidebarNav collapsed={!desktopOpen} activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
-        </div>
-
-        {mobileOpen && (
-          <div className="fixed inset-0 z-50 flex md:hidden">
-            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden="true" />
-            <div className="relative h-full shadow-2xl">
-              <SidebarNav activeId={activeId} onSelect={handleSelect} activeWorkspace={activeWorkspace} onWorkspaceSelect={setActiveWorkspace} />
-              <Button variant="icon" size="icon" className="absolute right-3 top-3 size-8" onClick={() => setMobileOpen(false)} aria-label="Close menu"><X className="size-4" /></Button>
-            </div>
-          </div>
-        )}
-
-        <main className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <header className="flex h-[60px] items-center gap-3 border-b border-border px-4 sm:h-[64px] sm:px-6">
-            <Button variant="ghost" size="icon" className="size-8 shrink-0 p-0 md:hidden" onClick={() => setMobileOpen(true)} aria-label="Open menu"><Menu className="size-4" /></Button>
-            <div className="hidden min-w-0 flex-1 items-center gap-5 md:flex">
-              <Button variant="ghost" size="icon" className="size-8 shrink-0 p-0" onClick={() => setDesktopOpen((open) => !open)} aria-label={desktopOpen ? "Collapse sidebar" : "Expand sidebar"}>
-                {desktopOpen ? <PanelLeftClose className="size-4 text-muted-foreground" strokeWidth={1.5} /> : <PanelLeftOpen className="size-4 text-muted-foreground" strokeWidth={1.5} />}
-              </Button>
-              <div className="flex min-w-0 items-center gap-2 text-sm">
-                <span className="truncate text-muted-foreground">{activeWorkspace}</span>
-                <span className="text-muted-foreground">/</span>
-                <span className="font-semibold text-foreground">{activeTitle}</span>
-              </div>
-            </div>
-            <p className="min-w-0 flex-1 truncate text-sm font-semibold md:hidden">{activeTitle}</p>
-            <div className="ml-auto flex shrink-0 items-center gap-3 sm:gap-4">
-              <button
-                type="button"
-                ref={searchRef}
-                onClick={() => setSearchOpen(true)}
-                aria-label="Search dashboard"
-                className="hidden h-9 w-[180px] items-center gap-2 rounded-lg bg-input px-3 text-xs text-muted-foreground outline-none ring-ring transition-colors hover:bg-accent focus-visible:ring-1 sm:flex lg:w-[272px]"
-              >
-                <Search className="size-4 shrink-0" strokeWidth={1.5} />
-                <span className="flex-1 truncate text-left">Search...</span>
-                <kbd className="hidden rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] lg:inline-flex">⌘K</kbd>
-              </button>
-              <Button variant="icon" size="icon" aria-label="Account menu"><CircleUserRound className="size-4" strokeWidth={1.5} /></Button>
-            </div>
-          </header>
-
-          <section aria-label="Webhook dashboard" className="min-h-0 flex-1 overflow-y-auto px-4 py-7 sm:px-8 sm:py-9 lg:px-9">
-            <div className="mb-8 h-9 w-[204px] max-w-[58%] animate-pulse rounded-lg bg-muted" />
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6">
-              <div className="aspect-[1.7/0.8] rounded-xl border border-border bg-card sm:aspect-[1.7/0.8]" />
-              <div className="aspect-[1.7/0.8] rounded-xl border border-border bg-card" />
-            </div>
-            <div className="mt-6 rounded-xl border border-border bg-card px-4 py-6 sm:px-6 sm:py-7">
-              <div className="h-5 w-48 max-w-[52%] animate-pulse rounded-md bg-muted" />
-              <div className="my-6 h-px bg-border" />
-              <div className="space-y-4">
-                {[0, 1, 2, 3].map((row) => <div key={row} className="h-[52px] animate-pulse rounded-lg bg-muted" />)}
-              </div>
-            </div>
-          </section>
-        </main>
-
-        {searchOpen && (
-          <div className="absolute inset-0 z-[60] flex items-start justify-center bg-background/70 px-4 pt-[15vh] backdrop-blur-sm">
-            <div className="absolute inset-0" onClick={() => setSearchOpen(false)} aria-hidden="true" />
-            <div className="relative w-full max-w-xl overflow-hidden rounded-xl border border-border bg-card shadow-2xl" role="dialog" aria-modal="true" aria-label="Search dashboard">
-              <div className="flex items-center border-b border-border px-4">
-                <Search className="mr-3 size-[18px] shrink-0 text-muted-foreground" strokeWidth={1.5} />
-                <input autoFocus className="flex-1 bg-transparent py-4 text-sm text-foreground outline-none placeholder:text-muted-foreground" placeholder="Search projects, docs, or actions..." />
-                <kbd className="hidden rounded border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground sm:inline-flex">ESC</kbd>
-                <Button variant="ghost" size="icon" className="ml-2 size-8" onClick={() => setSearchOpen(false)} aria-label="Close search"><X className="size-4" /></Button>
-              </div>
-              <div className="flex flex-col items-center justify-center py-8">
-                <Command className="mb-2 size-6 text-muted-foreground/40" strokeWidth={1.5} />
-                <p className="text-[13px] font-medium text-muted-foreground">Type a command or search...</p>
-              </div>
-            </div>
-          </div>
-        )}
+    <DashboardShell title="Overview" rangePreset={preset} onRangeChange={setPreset}>
+      {/* KPIs */}
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-5">
+        <KpiCard
+          label="ALKWITI Revenue"
+          amountInr={data.totals.alkwitiRevenue}
+          icon={Wallet}
+          delta={data.hasPrevious ? data.deltas.alkwitiRevenue : undefined}
+          accent
+        />
+        <KpiCard
+          label="Product Sales Value"
+          amountInr={data.totals.productSalesValue}
+          icon={Package}
+          delta={data.hasPrevious ? data.deltas.productSalesValue : undefined}
+          compact
+        />
+        <KpiCard
+          label="Gross Order Value"
+          amountInr={data.totals.grossOrderValue}
+          icon={ShoppingCart}
+          delta={data.hasPrevious ? data.deltas.grossOrderValue : undefined}
+          compact
+        />
+        <KpiCard
+          label="Expenses"
+          amountInr={data.totals.expenses}
+          icon={Receipt}
+          delta={data.hasPrevious ? data.deltas.expenses : undefined}
+          invertDelta
+        />
+        <KpiCard
+          label="Available Cash"
+          amountInr={data.totals.availableCash}
+          icon={PiggyBank}
+          delta={data.hasPrevious ? data.deltas.availableCash : undefined}
+        />
       </div>
+
+      {/* Chart + cash summary */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <SectionCard title="" className="lg:col-span-2">
+          <RevenueChart invoices={data.currentInvoices} expenses={data.currentExpenses} />
+        </SectionCard>
+
+        <SectionCard title="Cash position" description="Revenue minus money actually spent">
+          <div className="space-y-3">
+            <SummaryRow label="Total revenue" value={money(data.lifetime.alkwitiRevenue)} />
+            <SummaryRow
+              label="Actual expenses"
+              value={`− ${money(data.lifetime.expenses)}`}
+              muted
+            />
+            <div className="h-px bg-border" />
+            <SummaryRow label="Available cash" value={money(data.lifetime.availableCash)} strong />
+
+            <div className="mt-4 rounded-xl border border-border bg-background p-3">
+              <p className="text-xs font-medium text-muted-foreground">Allocated (not yet spent)</p>
+              <div className="mt-2 space-y-2 text-sm">
+                <SummaryRow
+                  label="Founder salaries (30%)"
+                  value={money(data.salaries.reduce((s, x) => s + x.allocated, 0))}
+                  small
+                />
+                <SummaryRow label="China visit (40%)" value={money(data.china.accumulated)} small />
+                <SummaryRow
+                  label={`Dubai (${Math.round(data.dubai.currentRate * 100)}%)`}
+                  value={money(data.dubai.accumulated)}
+                  small
+                />
+                <SummaryRow
+                  label="Operational (30%)"
+                  value={money(data.operational.budget)}
+                  small
+                />
+              </div>
+              <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                Allocations reserve future revenue by plan. They are not expenses until the money is
+                actually spent.
+              </p>
+            </div>
+          </div>
+        </SectionCard>
+      </div>
+
+      {/* Goals */}
+      <div className="mt-4">
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-foreground">Financial goals</h2>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          <GoalCard goal={data.china} />
+          <GoalCard goal={data.dubai} />
+        </div>
+      </div>
+
+      {/* Operational budget + salaries + recent activity */}
+      <div className="mt-4 grid gap-4 lg:grid-cols-3">
+        <SectionCard title="Operational budget" description="30% allocation vs actual spend">
+          <div className="flex items-end justify-between">
+            <p className="text-xl font-semibold tabular-nums text-foreground">
+              {money(data.operational.spent)}
+            </p>
+            <p className="text-sm text-muted-foreground">of {money(data.operational.budget)}</p>
+          </div>
+          <div className="mt-2">
+            <GoalBar
+              value={data.operational.utilization}
+              tone={data.operational.utilization > 1 ? "destructive" : "brand"}
+            />
+          </div>
+          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+            <span>{Math.round(data.operational.utilization * 100)}% utilized</span>
+            <span>{money(data.operational.remaining)} remaining</span>
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Founder salary allocations" description="15% of revenue each">
+          <div className="space-y-4">
+            {data.salaries.map((s) => (
+              <div key={s.founderId}>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-medium text-foreground">{s.name}</span>
+                  <span className="tabular-nums text-muted-foreground">
+                    {money(s.paid)} / {money(s.allocated)}
+                  </span>
+                </div>
+                <div className="mt-1.5">
+                  <GoalBar value={s.allocated > 0 ? s.paid / s.allocated : 0} tone="success" />
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {money(s.outstanding)} unpaid allocation
+                </p>
+              </div>
+            ))}
+          </div>
+        </SectionCard>
+
+        <SectionCard title="Recent activity" description="Latest revenue & expenses">
+          <ul className="divide-y divide-border">
+            {recent.length === 0 && (
+              <li className="py-3 text-sm text-muted-foreground">No records in this range.</li>
+            )}
+            {recent.map((r) => (
+              <li key={`${r.kind}-${r.id}`} className="flex items-center gap-3 py-2.5">
+                <span
+                  className={`grid size-7 shrink-0 place-items-center rounded-full ${
+                    r.positive ? "bg-brand/12 text-brand" : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <ArrowRight className={`size-3.5 ${r.positive ? "-rotate-45" : "rotate-45"}`} />
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">{r.label}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {r.kind} · {format(parseISO(r.date), "d MMM yyyy")}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 text-sm font-medium tabular-nums ${
+                    r.positive ? "text-foreground" : "text-muted-foreground"
+                  }`}
+                >
+                  {r.positive ? "" : "− "}
+                  {money(r.amount)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+      </div>
+    </DashboardShell>
+  );
+}
+
+function SummaryRow({
+  label,
+  value,
+  strong,
+  muted,
+  small,
+}: {
+  label: string;
+  value: string;
+  strong?: boolean;
+  muted?: boolean;
+  small?: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between">
+      <span
+        className={`${small ? "text-xs" : "text-sm"} ${
+          muted ? "text-muted-foreground" : "text-foreground"
+        }`}
+      >
+        {label}
+      </span>
+      <span
+        className={`tabular-nums ${small ? "text-xs" : "text-sm"} ${
+          strong ? "text-lg font-semibold text-foreground" : "font-medium text-foreground"
+        }`}
+      >
+        {value}
+      </span>
     </div>
   );
 }

@@ -1,0 +1,183 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { ArrowRight, Info } from "lucide-react";
+import { DashboardShell } from "@/components/dashboard/shell";
+import { SectionCard, GoalBar, useMoney } from "@/components/dashboard/primitives";
+import { GoalCard } from "@/components/dashboard/goal-card";
+import { usePeriodData } from "@/components/dashboard/use-period-data";
+import type { RangePreset } from "@/components/dashboard/date-range";
+import { useFinance } from "@/lib/finance/store";
+import { cn } from "@/lib/utils";
+
+export const Route = createFileRoute("/goals")({
+  head: () => ({ meta: [{ title: "Financial Goals · ALKWITI" }] }),
+  component: GoalsPage,
+});
+
+function GoalsPage() {
+  const [preset, setPreset] = useState<RangePreset>("all");
+  const data = usePeriodData(preset);
+  const { config } = useFinance();
+  const money = useMoney();
+
+  const chinaDone = data.china.status === "complete";
+
+  return (
+    <DashboardShell title="Financial Goals" rangePreset={preset} onRangeChange={setPreset}>
+      {/* China -> Dubai allocation stage banner */}
+      <div className="rounded-2xl border border-brand/25 bg-brand/[0.05] p-4 sm:p-5">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 grid size-8 shrink-0 place-items-center rounded-lg bg-brand/15 text-brand">
+            <Info className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold text-foreground">
+              Dubai allocation stage: {Math.round(data.dubai.currentRate * 100)}% of revenue
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">{data.dubai.rateReason}.</p>
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium",
+                  !chinaDone
+                    ? "border-brand/40 bg-brand/10 text-foreground"
+                    : "border-border text-muted-foreground",
+                )}
+              >
+                Stage 1 · China incomplete → Dubai {Math.round(config.dubai.rateBeforeChina * 100)}%
+              </span>
+              <ArrowRight className="size-3.5 text-muted-foreground" />
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium",
+                  chinaDone
+                    ? "border-success/40 bg-success/10 text-foreground"
+                    : "border-border text-muted-foreground",
+                )}
+              >
+                Stage 2 · China complete → Dubai {Math.round(config.dubai.rateAfterChina * 100)}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Primary goals */}
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <GoalCard goal={data.china} />
+        <GoalCard goal={data.dubai} />
+      </div>
+
+      {/* Salary allocations */}
+      <SectionCard
+        title="Founder salary allocations"
+        description="15% of ALKWITI revenue allocated to each founder"
+        className="mt-4"
+      >
+        <div className="grid gap-5 sm:grid-cols-2">
+          {data.salaries.map((s) => (
+            <div key={s.founderId} className="rounded-xl border border-border bg-background p-4">
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-foreground">{s.name}</span>
+                <span className="text-xs text-muted-foreground">{Math.round(s.rate * 100)}%</span>
+              </div>
+              <p className="mt-2 text-xl font-semibold tabular-nums text-foreground">
+                {money(s.allocated)}
+              </p>
+              <p className="text-xs text-muted-foreground">allocated</p>
+              <div className="mt-3">
+                <GoalBar value={s.allocated > 0 ? s.paid / s.allocated : 0} tone="success" />
+              </div>
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <span className="text-muted-foreground">Paid {money(s.paid)}</span>
+                <span className="font-medium text-foreground">{money(s.outstanding)} unpaid</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </SectionCard>
+
+      {/* Operational budget */}
+      <SectionCard
+        title="Operational budget"
+        description="30% allocation vs actual expenses"
+        className="mt-4"
+      >
+        <div className="grid gap-4 sm:grid-cols-4">
+          <Stat label="Allocation" value={money(data.operational.budget)} />
+          <Stat label="Actual spend" value={money(data.operational.spent)} />
+          <Stat label="Remaining" value={money(data.operational.remaining)} />
+          <Stat label="Utilization" value={`${Math.round(data.operational.utilization * 100)}%`} />
+        </div>
+        <div className="mt-4">
+          <GoalBar
+            value={data.operational.utilization}
+            tone={data.operational.utilization > 1 ? "destructive" : "brand"}
+          />
+        </div>
+      </SectionCard>
+
+      {/* Allocation model reference */}
+      <SectionCard
+        title="Revenue allocation model"
+        description="How every rupee of ALKWITI revenue is planned"
+        className="mt-4"
+      >
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          <AllocationTile label="Shashank Space" pct="15%" note="Salary" />
+          <AllocationTile label="Mithrecha Ramakrishnan" pct="15%" note="Salary" />
+          <AllocationTile label="China visit" pct="40%" note="Goal" accent />
+          <AllocationTile label="Operational" pct="30%" note="Budget" />
+          <AllocationTile
+            label="Dubai"
+            pct={`${Math.round(data.dubai.currentRate * 100)}%`}
+            note={chinaDone ? "After China" : "Before China"}
+          />
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+          Salary + China + Operational allocations total 100% of revenue. The Dubai allocation is
+          funded on top of this from revenue and steps up automatically once the China goal
+          completes.
+        </p>
+      </SectionCard>
+    </DashboardShell>
+  );
+}
+
+function Stat({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-background p-3">
+      <p className="text-xs text-muted-foreground">{label}</p>
+      <p className="mt-1 text-lg font-semibold tabular-nums text-foreground">{value}</p>
+    </div>
+  );
+}
+
+function AllocationTile({
+  label,
+  pct,
+  note,
+  accent,
+}: {
+  label: string;
+  pct: string;
+  note: string;
+  accent?: boolean;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-xl border p-3",
+        accent ? "border-brand/30 bg-brand/[0.05]" : "border-border bg-background",
+      )}
+    >
+      <p className={cn("text-xl font-semibold", accent ? "text-brand" : "text-foreground")}>
+        {pct}
+      </p>
+      <p className="mt-1 truncate text-xs font-medium text-foreground" title={label}>
+        {label}
+      </p>
+      <p className="text-[11px] text-muted-foreground">{note}</p>
+    </div>
+  );
+}

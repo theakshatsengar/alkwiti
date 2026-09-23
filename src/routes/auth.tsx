@@ -127,10 +127,11 @@ function AuthPage() {
 
               {isSignup && (
                 <label className="flex items-start gap-2.5 text-xs text-white/50">
-                  <input type="checkbox" className="mt-0.5 size-3.5 rounded border-white/20 bg-white/[0.07]" />
-                  <span>
-                    I agree to the Terms of Service and Privacy Policy.
-                  </span>
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 size-3.5 rounded border-white/20 bg-white/[0.07]"
+                  />
+                  <span>I agree to the Terms of Service and Privacy Policy.</span>
                 </label>
               )}
 
