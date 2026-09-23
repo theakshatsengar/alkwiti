@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "@/lib/theme";
 import { useAuth } from "@/lib/supabase/auth";
 import { UserAvatar, SignOutButton } from "./user-menu";
+import { DockNav } from "./dock-nav";
 
 export interface NavItem {
   to: string;
@@ -76,41 +77,30 @@ export function Sidebar({
         />
       </div>
 
-      <nav aria-label="Dashboard navigation" className="flex min-h-0 flex-1 flex-col gap-1">
-        {NAV_ITEMS.map((item) => {
-          const Icon = item.icon;
-          return (
-            <div key={item.to} className="group relative">
+      {collapsed ? (
+        <DockNav items={NAV_ITEMS} onNavigate={onNavigate} />
+      ) : (
+        <nav aria-label="Dashboard navigation" className="flex min-h-0 flex-1 flex-col gap-1">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
               <Link
+                key={item.to}
                 to={item.to}
                 onClick={onNavigate}
                 activeOptions={{ exact: item.to === "/" }}
-                className={cn(
-                  "flex items-center rounded-lg text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
-                  collapsed ? "size-11 justify-center" : "gap-3 px-3 py-2.5",
-                )}
+                className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
                 activeProps={{
-                  className:
-                    "bg-brand/10 text-foreground [&_svg]:text-brand data-[status=active]:bg-brand/10",
+                  className: "bg-brand/10 text-foreground [&_svg]:text-brand",
                 }}
               >
                 <Icon className="size-[18px] shrink-0" strokeWidth={1.75} />
-                {!collapsed && <span className="truncate">{item.label}</span>}
+                <span className="truncate">{item.label}</span>
               </Link>
-
-              {/* Hover label — only when the rail is collapsed */}
-              {collapsed && (
-                <span
-                  role="tooltip"
-                  className="pointer-events-none absolute left-full top-1/2 z-50 ml-2 -translate-y-1/2 translate-x-1 whitespace-nowrap rounded-md border border-border bg-popover px-2.5 py-1.5 text-xs font-medium text-popover-foreground opacity-0 shadow-md transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100"
-                >
-                  {item.label}
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </nav>
+            );
+          })}
+        </nav>
+      )}
 
       {/* User + sign out */}
       {user ? (

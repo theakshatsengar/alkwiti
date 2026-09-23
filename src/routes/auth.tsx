@@ -1,13 +1,13 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { AlertCircle, Loader2, ArrowRight } from "lucide-react";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/supabase/auth";
 import { useTheme } from "@/lib/theme";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Sign in · ALKWITI" },
+      { title: "Sign in · ALKWITI, Cutie" },
       { name: "description", content: "Sign in to the ALKWITI financial command center." },
     ],
   }),
@@ -69,8 +69,7 @@ function AuthPage() {
               className="mb-10 h-20 w-auto"
             />
 
-            <p className="eyebrow">Financial &amp; Business Dashboard</p>
-            <h1 className="mt-2 text-2xl font-semibold tracking-tight">Sign in to ALKWITI</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">Sign into AlkWiTi, Cutie 😉</h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
               Access the founder financial command center.
             </p>
@@ -114,8 +113,8 @@ function AuthPage() {
             </button>
 
             <p className="mt-6 text-xs leading-relaxed text-muted-foreground">
-              By continuing you agree to ALKWITI's terms and acknowledge financial data is handled
-              per our privacy practices. Access is restricted to authorized founders.
+              By continuing you agree to ALKWITI's terms. Access is restricted to authorized
+              founders.
             </p>
           </div>
         </div>
@@ -127,34 +126,13 @@ function AuthPage() {
             className="pointer-events-none absolute -right-24 top-1/3 size-96 rounded-full blur-[120px]"
             style={{ background: "color-mix(in oklch, var(--color-brand) 30%, transparent)" }}
           />
-          <div className="relative z-10 flex w-full flex-col justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-background/50">
-                Trade Without Borders
-              </p>
-              <h2 className="mt-6 max-w-md text-3xl font-semibold leading-tight tracking-tight">
-                Your financial cockpit — revenue, goals and cash at a glance.
-              </h2>
-              <p className="mt-4 max-w-md text-sm leading-relaxed text-background/60">
-                Track ALKWITI revenue, product sales value, gross order value, expenses and progress
-                toward the China visit and Dubai incorporation goals — all in one place.
-              </p>
-            </div>
-
-            <ul className="mt-12 space-y-3 text-sm text-background/70">
-              {[
-                "Commission-based revenue allocation engine",
-                "China → Dubai goal tracking",
-                "INR base with USD display",
-              ].map((line) => (
-                <li key={line} className="flex items-center gap-2.5">
-                  <span className="grid size-5 place-items-center rounded-full bg-brand/20 text-brand">
-                    <ArrowRight className="size-3" />
-                  </span>
-                  {line}
-                </li>
-              ))}
-            </ul>
+          <div className="relative z-10 flex w-full flex-col justify-end">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-background/50">
+              Trade Without Borders
+            </p>
+            <h2 className="mt-3 max-w-sm text-2xl font-semibold leading-tight tracking-tight">
+              Your financial command center.
+            </h2>
           </div>
         </div>
       </div>
