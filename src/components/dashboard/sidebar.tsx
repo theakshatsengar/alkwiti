@@ -36,9 +36,16 @@ export function Sidebar({
 }) {
   const { resolved } = useTheme();
   const { user } = useAuth();
-  // Per brand guide: logo-lightbg = dark wordmark (for light bg),
-  // logo-darkbg = light wordmark (for dark bg). Pick by the sidebar background.
-  const logoSrc = resolved === "dark" ? "/logo-darkbg.png" : "/logo-lightbg.png";
+  // Logo depends on both collapse state and theme:
+  //  - expanded: full lockup (logo-lightbg on light bg / logo-darkbg on dark bg)
+  //  - collapsed: compact icon mark (o.png on light bg / oo.png on dark bg)
+  const logoSrc = collapsed
+    ? resolved === "dark"
+      ? "/oo.png"
+      : "/o.png"
+    : resolved === "dark"
+      ? "/logo-darkbg.png"
+      : "/logo-lightbg.png";
 
   const displayName =
     (user?.user_metadata?.["full_name"] as string | undefined) ??
