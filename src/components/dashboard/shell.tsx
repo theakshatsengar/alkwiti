@@ -1,9 +1,11 @@
-import { useState, type ReactNode } from "react";
-import { X } from "lucide-react";
+import { useEffect, useState, type ReactNode } from "react";
+import { X, Loader2 } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { Sidebar } from "./sidebar";
 import { DashboardHeader } from "./header";
 import { type RangePreset } from "./date-range";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/lib/supabase/auth";
 
 export function DashboardShell({
   title,
@@ -17,13 +19,34 @@ export function DashboardShell({
   children: ReactNode;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [desktopCollapsed, setDesktopCollapsed] = useState(true);
+  const { user, loading, configured } = useAuth();
+  const navigate = useNavigate();
+
+  // Gate the dashboard. Once the auth check settles, unauthenticated users
+  // (when Supabase is configured) are sent to the sign-in screen.
+  useEffect(() => {
+    if (!loading && configured && !user) {
+      navigate({ to: "/auth", replace: true });
+    }
+  }, [loading, configured, user, navigate]);
+
+  // While the session is being resolved, or a redirect is imminent, show a
+  // lightweight loader instead of flashing the dashboard.
+  if (loading || (configured && !user)) {
+    return (
+      <div className="grid h-screen place-items-center bg-canvas text-muted-foreground">
+        <Loader2 className="size-6 animate-spin text-brand" />
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen overflow-hidden bg-canvas p-2 sm:p-2.5">
       <div className="relative flex h-full w-full overflow-hidden rounded-2xl border border-border bg-background">
         {/* Desktop sidebar */}
         <div className="hidden shrink-0 lg:block">
-          <Sidebar />
+          <Sidebar collapsed={desktopCollapsed} />
         </div>
 
         {/* Mobile sidebar */}
@@ -55,6 +78,8 @@ export function DashboardShell({
             rangePreset={rangePreset}
             onRangeChange={onRangeChange}
             onOpenSidebar={() => setMobileOpen(true)}
+            desktopCollapsed={desktopCollapsed}
+            onToggleDesktopSidebar={() => setDesktopCollapsed((c) => !c)}
           />
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-6 sm:px-6 sm:py-7 lg:px-8">
             {children}

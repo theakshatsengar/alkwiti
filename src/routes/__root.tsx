@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { FinanceProvider } from "../lib/finance/store";
 import { ThemeProvider } from "../lib/theme";
+import { AuthProvider } from "../lib/supabase/auth";
 
 // Runs before first paint to apply the stored theme and avoid a light-mode flash.
 const THEME_INIT_SCRIPT = `(function(){try{var m=localStorage.getItem("alkwiti.theme.v1");var d=m==="dark"||((!m||m==="system")&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;if(d)r.classList.add("dark");r.style.colorScheme=d?"dark":"light";}catch(e){}})();`;
@@ -131,10 +132,12 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <FinanceProvider>
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-        </FinanceProvider>
+        <AuthProvider>
+          <FinanceProvider>
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </FinanceProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

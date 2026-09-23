@@ -1,4 +1,13 @@
-import { Menu, RefreshCw, Check, AlertCircle, Sun, Moon } from "lucide-react";
+import {
+  Menu,
+  RefreshCw,
+  Check,
+  AlertCircle,
+  Sun,
+  Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
+} from "lucide-react";
 import { useFinance } from "@/lib/finance/store";
 import { useTheme } from "@/lib/theme";
 import { exchangeRateLabel } from "@/lib/finance/currency";
@@ -11,11 +20,15 @@ export function DashboardHeader({
   rangePreset,
   onRangeChange,
   onOpenSidebar,
+  desktopCollapsed,
+  onToggleDesktopSidebar,
 }: {
   title: string;
   rangePreset: RangePreset;
   onRangeChange: (p: RangePreset) => void;
   onOpenSidebar: () => void;
+  desktopCollapsed: boolean;
+  onToggleDesktopSidebar: () => void;
 }) {
   const { currency, setCurrency, config, loading, error, source, lastSyncedAt, refresh } =
     useFinance();
@@ -23,7 +36,8 @@ export function DashboardHeader({
 
   return (
     <header className="flex flex-col gap-3 border-b border-border px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:gap-4">
-      <div className="flex min-w-0 items-center gap-3">
+      <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+        {/* Mobile: open the drawer */}
         <Button
           variant="ghost"
           size="icon"
@@ -33,12 +47,29 @@ export function DashboardHeader({
         >
           <Menu className="size-4" />
         </Button>
-        <div className="min-w-0">
-          <p className="eyebrow">ALKWITI · Financial &amp; Business</p>
-          <h1 className="truncate text-lg font-semibold leading-tight text-foreground sm:text-xl">
-            {title}
-          </h1>
-        </div>
+
+        {/* Desktop: collapse / expand the sidebar */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden size-8 shrink-0 lg:inline-flex"
+          onClick={onToggleDesktopSidebar}
+          aria-label={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+          title={desktopCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {desktopCollapsed ? (
+            <PanelLeftOpen className="size-4 text-muted-foreground" strokeWidth={1.5} />
+          ) : (
+            <PanelLeftClose className="size-4 text-muted-foreground" strokeWidth={1.5} />
+          )}
+        </Button>
+
+        {/* Breadcrumb: Workspace / Page */}
+        <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-2 text-sm">
+          <span className="hidden truncate text-muted-foreground sm:inline">ALKWITI</span>
+          <span className="hidden text-muted-foreground sm:inline">/</span>
+          <span className="truncate font-semibold text-foreground">{title}</span>
+        </nav>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 lg:ml-auto">
