@@ -58,15 +58,15 @@ function AuthPage() {
   const logoSrc = resolved === "dark" ? "/logo-darkbg.png" : "/logo-lightbg.png";
 
   return (
-    <section className="min-h-screen bg-canvas p-2.5 text-foreground">
-      <div className="grid min-h-[calc(100vh-1.25rem)] gap-2.5 overflow-hidden rounded-2xl lg:grid-cols-2">
+    <section className="h-screen overflow-hidden bg-canvas p-2.5 text-foreground lg:min-h-screen lg:h-auto">
+      <div className="grid h-[calc(100vh-1.25rem)] gap-2.5 overflow-hidden rounded-2xl lg:h-auto lg:min-h-[calc(100vh-1.25rem)] lg:grid-cols-2">
         {/* LEFT — sign-in card */}
-        <div className="flex items-center justify-center rounded-2xl border border-border bg-background px-6 py-12 lg:px-14">
-          <div className="mx-auto w-full max-w-[400px]">
+        <div className="flex items-center justify-center rounded-2xl border border-border bg-background px-6 pb-12 pt-4 lg:px-14 lg:py-12">
+          <div className="mx-auto w-full max-w-[400px] -translate-y-4 lg:translate-y-0">
             <img
               src={logoSrc}
               alt="Alkwiti, Trade Without Borders"
-              className="mb-10 h-20 w-auto"
+              className="-ml-3 mb-4 h-20 w-auto lg:ml-0 lg:mb-10"
             />
 
             <h1 className="text-2xl font-semibold tracking-tight">Sign into AlkWiTi, Cutie 😉</h1>
