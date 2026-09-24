@@ -170,14 +170,29 @@ function SettingsPage() {
         </SectionCard>
 
         {/* Operational */}
-        <SectionCard title="Operational expenses" description="Budget allocation from revenue">
-          <PercentField
-            label="Operational allocation"
-            value={config.operational.allocationRate}
-            onChange={(allocationRate) =>
-              updateConfig((p) => ({ ...p, operational: { ...p.operational, allocationRate } }))
-            }
-          />
+        <SectionCard title="Operational expenses" description="Dynamic allocation, gated on China goal">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <PercentField
+              label="Before China"
+              value={config.operational.rateBeforeChina}
+              onChange={(rateBeforeChina) =>
+                updateConfig((p) => ({
+                  ...p,
+                  operational: { ...p.operational, rateBeforeChina },
+                }))
+              }
+            />
+            <PercentField
+              label="After China"
+              value={config.operational.rateAfterChina}
+              onChange={(rateAfterChina) =>
+                updateConfig((p) => ({
+                  ...p,
+                  operational: { ...p.operational, rateAfterChina },
+                }))
+              }
+            />
+          </div>
         </SectionCard>
 
         {/* Dubai */}

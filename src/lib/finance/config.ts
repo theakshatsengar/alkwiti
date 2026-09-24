@@ -14,7 +14,8 @@ export const DEFAULT_CONFIG: FinanceConfig = {
     allocationRate: 0.4,
   },
   operational: {
-    allocationRate: 0.3,
+    rateBeforeChina: 0.2,
+    rateAfterChina: 0.3,
   },
   dubai: {
     target: 500000,

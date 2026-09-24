@@ -116,7 +116,7 @@ function Overview() {
                   small
                 />
                 <SummaryRow
-                  label="Operational (30%)"
+                  label={`Operational (${Math.round(data.operational.allocationRate * 100)}%)`}
                   value={money(data.operational.budget)}
                   small
                 />

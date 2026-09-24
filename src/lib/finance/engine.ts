@@ -134,22 +134,34 @@ export function computeSalaries(
   });
 }
 
-/** Operational budget (allocation) vs actual operational spend. */
+/**
+ * Operational budget (allocation) vs actual operational spend.
+ * The allocation rate is DYNAMIC, gated on the China goal like Dubai:
+ *   - rateBeforeChina (e.g. 20%) while the China goal is incomplete
+ *   - rateAfterChina  (e.g. 30%) once the China goal is complete
+ */
 export function computeOperational(
   revenue: number,
   config: FinanceConfig,
   expenses: ExpenseRecord[],
 ): OperationalSummary {
-  const budget = round2(revenue * config.operational.allocationRate);
+  const chinaDone = isChinaComplete(revenue, config);
+  const allocationRate = chinaDone
+    ? config.operational.rateAfterChina
+    : config.operational.rateBeforeChina;
+  const budget = round2(revenue * allocationRate);
   const spent = sumBy(expenses, (e) => e.inrEquivalent);
   const remaining = round2(budget - spent);
   const utilization = budget > 0 ? spent / budget : 0;
   return {
-    allocationRate: config.operational.allocationRate,
+    allocationRate,
     budget,
     spent,
     remaining,
     utilization,
+    rateReason: chinaDone
+      ? "China Industrial Visit goal completed"
+      : "China Industrial Visit goal not yet completed",
   };
 }
 

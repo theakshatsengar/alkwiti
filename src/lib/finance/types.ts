@@ -103,8 +103,10 @@ export interface FinanceConfig {
   };
 
   operational: {
-    /** Fraction of revenue allocated to the operational budget, e.g. 0.30. */
-    allocationRate: number;
+    /** Allocation before the China goal completes, e.g. 0.20. */
+    rateBeforeChina: number;
+    /** Allocation after the China goal completes, e.g. 0.30. */
+    rateAfterChina: number;
   };
 
   dubai: {
@@ -155,8 +157,9 @@ export interface SalarySummary {
   outstanding: number;
 }
 
-/** Operational budget: allocation (30% of revenue) vs actual spend. */
+/** Operational budget: allocation vs actual spend. Rate is dynamic (China-gated). */
 export interface OperationalSummary {
+  /** Effective rate applied now (before/after China). */
   allocationRate: number;
   /** revenue * allocationRate */
   budget: number;
@@ -165,6 +168,8 @@ export interface OperationalSummary {
   remaining: number;
   /** 0..1 */
   utilization: number;
+  /** Why the current rate is what it is (China stage). */
+  rateReason: string;
 }
 
 /** The three headline sales metrics plus expenses and cash. */
