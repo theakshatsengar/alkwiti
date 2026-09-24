@@ -143,7 +143,10 @@ function Overview() {
 
       {/* Operational budget + salaries + recent activity */}
       <div className="mt-4 grid gap-4 lg:grid-cols-3">
-        <SectionCard title="Operational budget" description="30% allocation vs actual spend">
+        <SectionCard
+          title="Operational budget"
+          description={`${Math.round(data.operational.allocationRate * 100)}% allocation vs actual spend`}
+        >
           <div className="flex items-end justify-between">
             <p className="text-xl font-semibold tabular-nums text-foreground">
               {money(data.operational.spent)}

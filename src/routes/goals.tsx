@@ -100,7 +100,7 @@ function GoalsPage() {
       {/* Operational budget */}
       <SectionCard
         title="Operational budget"
-        description="30% allocation vs actual expenses"
+        description={`${Math.round(data.operational.allocationRate * 100)}% allocation vs actual expenses`}
         className="mt-4"
       >
         <div className="grid gap-4 sm:grid-cols-4">
@@ -115,6 +115,14 @@ function GoalsPage() {
             tone={data.operational.utilization > 1 ? "destructive" : "brand"}
           />
         </div>
+        <p className="mt-3 rounded-lg border border-border bg-background px-2.5 py-2 text-xs leading-relaxed text-muted-foreground">
+          <span className="font-medium text-foreground">
+            Allocation {Math.round(data.operational.allocationRate * 100)}%
+          </span>
+          {" — "}
+          {data.operational.rateReason}. Steps up to{" "}
+          {Math.round(config.operational.rateAfterChina * 100)}% once China completes.
+        </p>
       </SectionCard>
 
       {/* Allocation model reference */}
@@ -127,7 +135,11 @@ function GoalsPage() {
           <AllocationTile label="Shashank Space" pct="15%" note="Salary" />
           <AllocationTile label="Mithrha Ramakrishnan" pct="15%" note="Salary" />
           <AllocationTile label="China visit" pct="40%" note="Goal" accent />
-          <AllocationTile label="Operational" pct="30%" note="Budget" />
+          <AllocationTile
+            label="Operational"
+            pct={`${Math.round(data.operational.allocationRate * 100)}%`}
+            note={chinaDone ? "After China" : "Before China"}
+          />
           <AllocationTile
             label="Dubai"
             pct={`${Math.round(data.dubai.currentRate * 100)}%`}
@@ -135,8 +147,8 @@ function GoalsPage() {
           />
         </div>
         <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
-          Salary + China + Operational allocations total 100% of revenue. The Dubai allocation is
-          funded on top of this from revenue and steps up automatically once the China goal
+          Founder salaries (30%) and the China allocation (40%) are fixed. The Operational and Dubai
+          allocations are dynamic — they step up automatically once the China Industrial Visit goal
           completes.
         </p>
       </SectionCard>
