@@ -114,7 +114,7 @@ The two founding partners are:
 
 ### Founding Partner 2
 
-**Mithrecha Ramakrishnan**
+**Mithrha Ramakrishnan**
 
 IMPORTANT:
 
@@ -136,9 +136,9 @@ For every recognized ALKWITI revenue amount:
 
 15% of generated ALKWITI revenue is allocated toward Shashank Space's salary.
 
-### 15% — Mithrecha Ramakrishnan
+### 15% — Mithrha Ramakrishnan
 
-15% of generated ALKWITI revenue is allocated toward Mithrecha Ramakrishnan's salary.
+15% of generated ALKWITI revenue is allocated toward Mithrha Ramakrishnan's salary.
 
 Therefore:
 
@@ -243,7 +243,7 @@ and
 For example, if ₹1,00,000 of ALKWITI revenue is generated:
 
 - ₹15,000 → Shashank Space salary allocation
-- ₹15,000 → Mithrecha Ramakrishnan salary allocation
+- ₹15,000 → Mithrha Ramakrishnan salary allocation
 - ₹40,000 → China industrial visit
 - ₹30,000 → Operational allocation
 
@@ -629,7 +629,7 @@ Show:
 - Amount paid, if payment data is available
 - Remaining/unpaid allocation
 
-### Mithrecha Ramakrishnan Salary
+### Mithrha Ramakrishnan Salary
 
 Allocation:
 
@@ -1130,7 +1130,7 @@ Allow configuration of:
 
 Shashank Space
 
-Mithrecha Ramakrishnan
+Mithrha Ramakrishnan
 
 ### Salary allocation
 
@@ -1138,7 +1138,7 @@ Shashank Space:
 
 15%
 
-Mithrecha Ramakrishnan:
+Mithrha Ramakrishnan:
 
 15%
 

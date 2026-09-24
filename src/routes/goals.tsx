@@ -125,7 +125,7 @@ function GoalsPage() {
       >
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           <AllocationTile label="Shashank Space" pct="15%" note="Salary" />
-          <AllocationTile label="Mithrecha Ramakrishnan" pct="15%" note="Salary" />
+          <AllocationTile label="Mithrha Ramakrishnan" pct="15%" note="Salary" />
           <AllocationTile label="China visit" pct="40%" note="Goal" accent />
           <AllocationTile label="Operational" pct="30%" note="Budget" />
           <AllocationTile

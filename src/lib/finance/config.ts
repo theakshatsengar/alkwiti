@@ -7,7 +7,7 @@ import type { FinanceConfig } from "./types";
 export const DEFAULT_CONFIG: FinanceConfig = {
   founders: [
     { id: "shashank", name: "Shashank Space", salaryRate: 0.15 },
-    { id: "mithrecha", name: "Mithrecha Ramakrishnan", salaryRate: 0.15 },
+    { id: "mithrha", name: "Mithrha Ramakrishnan", salaryRate: 0.15 },
   ],
   china: {
     target: 250000,

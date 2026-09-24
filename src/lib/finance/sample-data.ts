@@ -318,9 +318,9 @@ export const SAMPLE_EXPENSES: ExpenseRecord[] = [
 
 export const SAMPLE_SALARY_PAYMENTS: SalaryPayment[] = [
   { id: "PAY-001", founderId: "shashank", date: "2026-07-05", amount: 18000, sample: true },
-  { id: "PAY-002", founderId: "mithrecha", date: "2026-07-05", amount: 18000, sample: true },
+  { id: "PAY-002", founderId: "mithrha", date: "2026-07-05", amount: 18000, sample: true },
   { id: "PAY-003", founderId: "shashank", date: "2026-08-05", amount: 20000, sample: true },
-  { id: "PAY-004", founderId: "mithrecha", date: "2026-08-05", amount: 15000, sample: true },
+  { id: "PAY-004", founderId: "mithrha", date: "2026-08-05", amount: 15000, sample: true },
 ];
 
 /** In-memory sample implementation of the data-source seam. */
