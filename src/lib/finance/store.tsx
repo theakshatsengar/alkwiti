@@ -8,8 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { DEFAULT_CONFIG, loadConfig, saveConfig } from "./config";
-import { dedupeInvoices, type FinanceDataSource } from "./data-source";
-import { SampleDataSource } from "./sample-data";
+import { dedupeInvoices } from "./data-source";
+import { fetchFinanceData } from "./server";
 import type {
   CurrencyCode,
   ExpenseRecord,
@@ -39,9 +39,6 @@ interface FinanceState {
 
 const FinanceContext = createContext<FinanceState | null>(null);
 
-// Single place a real data source would be swapped in.
-const dataSource: FinanceDataSource = new SampleDataSource();
-
 export function FinanceProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<FinanceConfig>(DEFAULT_CONFIG);
   const [currency, setCurrency] = useState<CurrencyCode>(DEFAULT_CONFIG.currency.default);
@@ -50,6 +47,10 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
   const [salaryPayments, setSalaryPayments] = useState<SalaryPayment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<{ name: string; isSample: boolean }>({
+    name: "Sample data",
+    isSample: true,
+  });
   const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
 
   // Hydrate persisted config on the client (SSR-safe).
@@ -63,16 +64,14 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    Promise.all([
-      dataSource.getInvoices(),
-      dataSource.getExpenses(),
-      dataSource.getSalaryPayments(),
-    ])
-      .then(([inv, exp, pay]) => {
+    fetchFinanceData()
+      .then((payload) => {
         if (cancelled) return;
-        setInvoices(dedupeInvoices(inv));
-        setExpenses(exp);
-        setSalaryPayments(pay);
+        setInvoices(dedupeInvoices(payload.invoices));
+        setExpenses(payload.expenses);
+        setSalaryPayments(payload.salaryPayments);
+        setSource(payload.source);
+        setError(payload.warning ?? null);
         setLastSyncedAt(new Date());
       })
       .catch((e: unknown) => {
@@ -111,7 +110,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       salaryPayments,
       loading,
       error,
-      source: { name: dataSource.name, isSample: dataSource.isSample },
+      source,
       lastSyncedAt,
       refresh,
     }),
@@ -124,6 +123,7 @@ export function FinanceProvider({ children }: { children: ReactNode }) {
       salaryPayments,
       loading,
       error,
+      source,
       lastSyncedAt,
       refresh,
     ],

@@ -63,6 +63,7 @@ export type ExpenseCategory =
 /** An actual operating expense — money genuinely spent (not an allocation). */
 export interface ExpenseRecord {
   id: string;
+  /** Primary date used for weekly/monthly grouping. */
   date: string;
   description: string;
   category: ExpenseCategory;
@@ -71,6 +72,12 @@ export interface ExpenseRecord {
   currency: CurrencyCode;
   inrEquivalent: number;
   vendor?: string;
+  /** Optional reference number for the expense. */
+  reference?: string;
+  /** Optional invoice date on the bill. */
+  invoiceDate?: string;
+  /** Optional payment due date. */
+  dueDate?: string;
   sample?: boolean;
 }
 
